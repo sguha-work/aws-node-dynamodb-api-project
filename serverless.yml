@@ -1,0 +1,145 @@
+# serverless.yml
+service: vw-user-management
+variablesResolutionMode: 20210219
+# useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: eu-west-2
+  stage: ${opt:stage, 'dev'}
+  # profile: ${self:custom.${self:provider.stage}.profile}
+  logRetentionInDays: ${self:custom.${self:provider.stage}.logRetentionInDays}
+  logs:
+    restApi: true
+  deploymentBucket:
+    name: vw-lambda-${self:provider.region}-534277037489-layers
+    # On deployment, serverless prunes artifacts older than this limit (default: 5)
+    maxPreviousDeploymentArtifacts: 3
+    # Prevents public access via ACLs or bucket policies (default: false)
+    # Note: the deployment bucket is not public by default. These are additional ACLs.
+    blockPublicAccess: true
+    # Skip the creation of a default bucket policy when the deployment bucket is created (default: false)
+    # skipPolicySetup: true
+    # Enable bucket versioning (default: false)
+    versioning: true
+    serverSideEncryption: AES256
+  memorySize: ${self:custom.${self:provider.stage}.memorySize}
+  timeout: ${self:custom.${self:provider.stage}.timeout}
+  environment:
+    LogLevel: debug
+    DBConnURL: ${self:custom.${self:provider.stage}.DBConnURL}
+    COGNITO_USER_POOL_ID:
+      Ref: CognitoUserPool
+    COGNITO_CLIENT_ID:
+      Ref: CognitoUserPoolClient
+    S3UserAccessKeyId: ${self:custom.${self:provider.stage}.S3UserAccessKeyId}
+    S3UserAccessKeySecret: ${self:custom.${self:provider.stage}.S3UserAccessKeySecret}
+
+    # S3UserAccessKeySecret: ${self:custom.${self:provider.stage}.S3UserAccessKeySecret}
+    # 'Fn::GetAtt':
+    #   - VWPortalBucketUserCredentials
+    #   - SecretAccessKey
+    #{'Fn::ImportValue': 'vw-${self:provider.stage}-Portal-S3UserAccessKeySecret'}
+    # COGNITO_CLIENT_ID: ${self:custom.${self:provider.stage}.COGNITO_CLIENT_ID}
+    # COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
+    # COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
+  # iam:
+  #   role:
+  #     statements:
+  #       - Effect: Allow
+  #         Action:
+  #           - cognito-idp:CreateUserPool
+  #           - cognito-idp:AdminCreateUser
+  #           # - cognito-idp:AdminSetUserPassword
+  #           # - cognito-idp:AdminUpdateUserAttributes
+  #           # - cognito-idp:AdminRespondToAuthChallenge
+  #           # - cognito-idp:ListGroups
+  #           # - cognito-idp:AdminAddUserToGroup
+  #         Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*
+
+package:
+  individually: true
+  excludeDevDependencies: true
+  exclude:
+    - node_modules/**/*
+  include:
+    - build/index.handler
+
+functions:
+  - ${file(src/aws-resources/lambda/functions.yml)}
+
+plugins:
+  - serverless-export-env
+  - serverless-iam-roles-per-function
+  - serverless-offline
+
+custom:
+  local:
+    Stack: vwAPILocalStack
+    COGNITO_USER_POOL_ID: { Ref: CognitoUserPool }
+    COGNITO_CLIENT_ID: { Ref: CognitoUserPoolClient }
+    S3UserAccessKeyId: { Ref: VWPortalBucketUserCredentials }
+    #  {'Fn::ImportValue': 'vw-${self:provider.stage}-Portal-S3UserAccessKeyId'}
+    S3UserAccessKeySecret:
+      {
+        "Fn::ImportValue": "vw-${self:provider.stage}-Portal-S3UserAccessKeySecret",
+      }
+    portalBucketName: vw-${self:provider.stage}-534277037489-portal-bucket
+    DBConnURL: mongodb+srv://vw_dev:4oQ6a8703GMcLPGB@vwdevdb.sx7osjz.mongodb.net/
+    memorySize: 128
+    timeout: 20
+    logRetentionInDays: 1
+
+  dev:
+    Stack: vwAPIDevStack
+    COGNITO_USER_POOL_ID: { Ref: CognitoUserPool }
+    COGNITO_CLIENT_ID: { Ref: CognitoUserPoolClient }
+    # S3UserAccessKeyId: 
+    #   Ref: VWPortalBucketUserCredentials
+    # S3UserAccessKeySecret: { "Fn::ImportValue": "vw-${self:provider.stage}-Portal-S3UserAccessKeySecret"}
+    S3UserAccessKeyId: AKIA2QY4RQUJLG42QBNQ
+    S3UserAccessKeySecret: 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
+    portalBucketName: vw-${self:provider.stage}-534277037489-portal-bucket
+    DBConnURL: mongodb+srv://vw_dev:4oQ6a8703GMcLPGB@vwdevdb.sx7osjz.mongodb.net/
+    memorySize: 128
+    timeout: 20
+    logRetentionInDays: 1
+
+  prod:
+    Stack: vwAPIProdStack
+    COGNITO_USER_POOL_ID: { Ref: CognitoUserPool }
+    COGNITO_CLIENT_ID: { Ref: CognitoUserPoolClient }
+    S3UserAccessKeyId: AKIAXYZLETWY52FH7MWT
+    S3UserAccessKeySecret: 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
+    # S3UserAccessKeyId: 
+    #   Ref: VWPortalBucketUserCredentials
+    #   # {
+    #   #   "Fn::ImportValue": "vw-${self:provider.stage}-Portal-S3UserAccessKeyId",
+    #   # }
+    # S3UserAccessKeySecret: { "Fn::ImportValue": "vw-${self:provider.stage}-Portal-S3UserAccessKeySecret"}
+    portalBucketName: vw-${self:provider.stage}-534277037489-portal-bucket
+    DBConnURL: mongodb+srv://vwProdUser:ktSBBqwNWdeNutfA@vwprodinstance.qufisvf.mongodb.net/?retryWrites=true&w=majority
+    memorySize: 2048
+    timeout: 15
+    logRetentionInDays: 5
+    # profile: VW_Pdefault
+
+  serverless-offline:
+    port: 9000
+
+  export-env:
+    filename: .env.${self:provider.stage}
+    overwrite: true
+    enableOffline: true
+
+resources:
+  # Cognito
+  - ${file(resources/cognito/cognito.yml)}
+
+  # API GW defined so you can export the restApiId, as well as name it.
+  - ${file(resources/apigateway/RestApi.yml)}
+
+  # S3 bucket for the respective portal & static resources.
+  # - ${file(resources/s3/s3.yml)}
+

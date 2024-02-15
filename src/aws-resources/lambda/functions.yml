@@ -1,0 +1,192 @@
+userSignup:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-signup-lambda-role
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - cognito-idp:AdminCreateUser
+        - cognito-idp:AdminAddUserToGroup
+      Resource: 
+        Fn::GetAtt: [CognitoUserPool, Arn]
+      # !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*
+  events:
+    - http:
+        path: users/signup
+        method: post
+        cors: true
+
+validateOTP:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-valiadteotp-lambda-role
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - cognito-idp:AdminInitiateAuth
+        - cognito-idp:AdminUpdateUserAttributes
+      Resource: 
+        Fn::GetAtt: [CognitoUserPool, Arn]
+      # !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*
+  events:
+    - http:
+        path: users/{userId}/validate-otp
+        method: post
+        cors: true
+
+userSetNewPassword:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-set-new-password-lambda-role
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - cognito-idp:AdminRespondToAuthChallenge
+      Resource: 
+        Fn::GetAtt: [CognitoUserPool, Arn]
+      # !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*
+  events:
+    - http:
+        path: users/{userId}/password
+        method: patch
+        cors: true
+
+userLogin:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-login-lambda-role
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - cognito-idp:AdminInitiateAuth
+        - cognito-idp:AdminUpdateUserAttributes
+      Resource: 
+        Fn::GetAtt: [CognitoUserPool, Arn]
+      #!Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*
+  events:
+    - http:
+        path: users/login
+        method: post
+        cors: true
+
+userRefreshToken:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-refresh-token-lambda-role
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - cognito-idp:initiateAuth
+      Resource: 
+        Fn::GetAtt: [CognitoUserPool, Arn]
+      # !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*
+  events:
+    - http:
+        path: users/{userId}/refresh-token
+        method: post
+        cors: true
+
+updateProfilePic:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-update-profilepic-lambda-role
+  events:
+    - http:
+        path: users/{userId}/profile-picture
+        method: patch
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS # important
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+
+putProfilePicSignedURL:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-s3-upload-userpp-lambda-role
+  environment:
+    stlBucketName: ${self:custom.${self:provider.stage}.portalBucketName}
+  events:
+    - http:
+        path: users/{userId}/profile-picture
+        method: post
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS # important
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+
+updateUserDetails:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-update-user-details-lambda-role
+  events:
+    - http:
+        path: users/{userId}
+        method: put
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS # important
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+
+getUserDetails:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-get-user-details-lambda-role
+  # iamRoleStatements:
+  #   - Effect: "Allow"
+  #     Action:
+  #       - cognito-idp:initiateAuth
+  #     Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*
+  events:
+    - http:
+        path: users/{userId}
+        method: get
+        cors: true
+        authorizer:
+          type: COGNITO_USER_POOLS # important
+          authorizerId:
+            Ref: ApiGatewayAuthorizer
+        
+          #true
+          # origin: '*'
+          # headers:
+          #   - Content-Type
+          #   - X-Amz-Date
+          #   - Authorization
+          #   - X-Api-Key
+          #   - X-Amz-Security-Token
+          #   - X-Amz-User-Agent
+          # allowCredentials: true
+        
+        
+        
+
+forPasswordHandler:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-forgot-password
+  events:
+    - http:
+        path: users/forgot-password
+        method: post
+        cors: true
+
+confirmForPasswordHandler:
+  handler: index.handler
+  iamRoleStatementsName: vw-user-${self:provider.stage}-confirm-forgot-password
+  events:
+    - http:
+        path: users/confirm-forgot-password
+        method: patch
+        cors: true
+
+# chatConnectionHandler:
+#   handler: build/index.webSocketHandler
+#   events:
+#     - websocket:
+#         route: $connect
+#     - websocket:
+#         route: $default
+#     - websocket:
+#         route: $disconnect
+#   environment:
+#     APIG_ENDPOINT:
+#       Fn::Join:
+#         - ""
+#         - - Ref: WebsocketsApi
+#           - .execute-api.
+#           - Ref: AWS::Region
+#           - .amazonaws.com/
+#           - ${self:provider.stage}

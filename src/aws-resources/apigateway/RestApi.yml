@@ -1,0 +1,77 @@
+Resources:
+  ApiGatewayRestApi:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Name: ${self:service}-${self:provider.stage}
+
+  ApiGatewayAuthorizer:
+    DependsOn:
+    # this is pre-defined by serverless
+      - ApiGatewayRestApi
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      AuthorizerResultTtlInSeconds: 300
+      Name: VWGatewayAuthorizer
+      Type: COGNITO_USER_POOLS
+      IdentitySource: method.request.header.Authorization
+      ProviderARNs: 
+        # - arn:aws:cognito-idp:${self:provider.region}:${aws:accountId}:userpool/eu-west-2_6nX0J2UIw
+        - Fn::GetAtt:
+          - CognitoUserPool
+          - Arn
+      #  arn:aws:cognito-idp:eu-west-2:723224986898:userpool/eu-west-2_6nX0J2UIw
+      RestApiId:
+        Ref: ApiGatewayRestApi
+
+  # then add an authorizer you can reference later
+  # ApiGatewayAuthorizer:
+  #   DependsOn:
+  #   # this is pre-defined by serverless
+  #     - ApiGatewayRestApi
+  #   Type: AWS::ApiGateway::Authorizer
+  #   Properties:
+  #     Name: cognito-authorizer
+  #     Type: COGNITO_USER_POOLS
+  #     # apparently ApiGatewayRestApi is a global string
+  #     RestApiId: { "Ref" : "ApiGatewayRestApi" }
+  #     IdentitySource: method.request.header.Authorization
+  #     ProviderARNs:
+  #       - Fn::GetAtt: 
+  #           - CognitoUserPool
+  #           - Arn
+
+  Unauthorized:
+    Type: 'AWS::ApiGateway::GatewayResponse'
+    Properties:
+      ResponseParameters:
+        "gatewayresponse.header.Access-Control-Allow-Origin": "'*'"
+        "gatewayresponse.header.Access-Control-Allow-Headers": "'*'"
+      ResponseType: "DEFAULT_4XX"
+      RestApiId: 
+        Ref: ApiGatewayRestApi
+
+  #This is for API gateway
+  # WebsocketApiGateway: #this is custom value refeered to serverless.yml
+  #   Type: AWS::ApiGatewayV2::Api
+  #   Properties:
+  #     Name: WebsocketApi
+  #     ProtocolType: WEBSOCKET
+  #     RouteSelectionExpression: '$request.body.action'
+Outputs:
+  ApiGWRestApiId:
+    Value:
+      Ref: ApiGatewayRestApi
+    Export:
+      Name: ${self:custom.${self:provider.stage}.Stack}-restApiId-${self:provider.stage}
+  ApiGWRootResourceId:
+    Value:
+      Fn::GetAtt:
+        - ApiGatewayRestApi
+        - RootResourceId
+    Export:
+      Name: ${self:custom.${self:provider.stage}.Stack}-rootResourceId-${self:provider.stage}
+  ApiGatewayAuthorizer:
+    Value:
+      Ref: ApiGatewayAuthorizer
+    Export:
+      Name: ${self:custom.${self:provider.stage}.Stack}-ApiGatewayAuthorizerId-${self:provider.stage}

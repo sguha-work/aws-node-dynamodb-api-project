@@ -1,0 +1,578 @@
+openapi: 3.0.1
+info:
+  title: 'VW User management API'
+  description: This API Spec is for User User Micro-service.
+  version: 1.0.0
+paths:
+  '/users/signup':
+    post:
+      operationId: signup
+      summary: Api for new user registration.
+      description: Creates a user in cognito, and send an OTP to the users.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - firstName
+                - lastName
+                # - password
+                - email
+                - mobile
+              $ref:  '#/components/schemas/userSignUpRequestModel'
+        description: Request payload structure to validate OTP
+      responses:
+        '201':
+          description: New User created in cognito & entry made in the DB.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 201
+                  message:
+                    type: string
+                    example: User created successfully.
+                  data:
+                    type: object
+                    properties:
+                      user: 
+                        $ref: '#/components/schemas/userSignUpsuccessResponseModel'
+
+                # 
+
+  '/users/{userId}/validate-otp':
+    post:
+      operationId: validateOTP
+      summary: OTP/Challenge verification. Trigger post sign up to validate the otp received in mail.
+      description: >-
+        Api to verify the user OTP & Response for Challenge request or Validate
+        request.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyOtpRequest'
+        description: Request payload structure to validate OTP
+      parameters:
+        - name: userId
+          in: path
+          description: The userId parameter for the user to authenticate.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A user object along with generated API Keys
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewPasswordRequiredResponse'
+ 
+  '/users/{userId}/password':
+    patch:
+      operationId: setNewPassword
+      summary: OTP/Challenge verification
+      description: >-
+        Api to verify the user OTP & Response for Challenge request or Validate
+        request..
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetNewPasswordRequestModel'
+        description: Request payload structure to validate OTP
+      parameters:
+        - name: userId
+          in: path
+          description: The userId parameter for the user to authenticate.
+          required: true
+          schema:
+            type: string
+      responses:
+        '202':
+          description: A user object along with generated API Keys
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginSuccessResponseModel'
+
+  '/users/login':
+    post:
+      operationId: login
+      summary: Api for Users to Login to fetch tokens.
+      description: Creates a user in cognito, and send an OTP to the users.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestModel'
+      responses:
+        '200':
+          description: A user object along with generated API Keys
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/NewPasswordRequiredResponse'
+                  - $ref: '#/components/schemas/LoginSuccessResponseModel'
+
+  '/users/{userId}/refresh-token':
+    post:
+      operationId: refreshToken
+      summary: Refresh token
+      description: Api to get new access/IDtoken using valid refreshtoken.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/refreshTokenRequestModel'
+        description: Request payload structure to get new tokens
+      parameters:
+        - name: userId
+          in: path
+          description: The userId parameter for the user to authenticate.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A user object along with generated API Keys same as login response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginSuccessResponseModel'
+
+  '/users/{userID}/profile-picture':
+    patch:
+      operationId: updateProfilePicture
+      summary: Api for Users to update profile picture.
+      description: This API is responsible to update the s3 file path in the mongo DB.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/updateProfilePicRequestModel'
+      parameters:
+        - name: userID
+          in: path
+          description: The userId parameter for the user to authenticate.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A user object along with new profile pic path saved in DB
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/updateProfilePicResponseModel'
+    post:
+      operationId: putProfilePicSignedURL
+      summary: Api for Users to update profile picture.
+      description: This API is responsible to update the s3 file path in the mongo DB.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/getPreSignedURL'
+      parameters:
+        - name: userID
+          in: path
+          description: The userId parameter for the user to authenticate.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ok
+
+  '/users/{userID}':
+    get:
+      operationId: getUserDetails
+      summary: Api to fetch User details.
+      description: Fetch user details by the ID provided.
+      parameters:
+        - name: userID
+          in: path
+          required: true
+          schema:
+            type: string
+                      
+      responses:
+        '200':
+          description: A user object along with client clinic details if present.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusCode:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: OK
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/userSignUpsuccessResponseModel'
+                      - type: object
+                        properties:
+                          clinic:
+                            $ref: '#/components/schemas/clinicModel'
+    put:
+      operationId: updateUserDetails
+      summary: Api for Users to Login to fetch tokens.
+      description: Creates a user in cognito, and send an OTP to the users.
+      parameters:
+        - name: userID
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                -  $ref: '#/components/schemas/userSignUpRequestModel'
+                - type: object
+                  properties:
+                    clinic:
+                      $ref: '#/components/schemas/clinicModel'
+                      
+      responses:
+        '200':
+          description: A user object along with client clinic details if present.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 201
+                  message:
+                    type: string
+                    example: User created successfully.
+                  data:
+                    allOf:
+                      - $ref: '#/components/schemas/userSignUpsuccessResponseModel'
+                      - type: object
+                        properties:
+                          clinic:
+                            $ref: '#/components/schemas/clinicModel'
+
+  '/users/forgot-password':
+    post:
+      operationId: forgotPassword
+      responses:
+        '200':
+          description: Success Response for forget password, when temporary password is sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      CodeDeliveryDetails:
+                        type: object
+                        properties:
+                          AttributeName:
+                            type: string
+                            example: email
+                          DeliveryMedium:
+                            type: string
+                            example: EMAIL
+                          Destination:
+                            type: string
+                            example: b***@g***
+
+      requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - email
+                properties:
+                  email:
+                    type: string
+                    format: email
+                    example: aritrikdas@gmail.com
+
+  '/users/confirm-forgot-password':
+    patch:
+      operationId: confirmForgotPassword
+      responses:
+        '200':
+          description: Success Response for forget password, when temporary password is sent.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: number
+                    example: 200
+                  message:
+                    type: string
+                    example: OK
+                  data:
+                    type: object
+                    properties:
+                      CodeDeliveryDetails:
+                        type: object
+                        properties:
+                          AttributeName:
+                            type: string
+                            example: email
+                          DeliveryMedium:
+                            type: string
+                            example: EMAIL
+                          Destination:
+                            type: string
+                            example: b***@g***
+
+      requestBody:
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - email
+                  - confirmationCode
+                  - password
+                properties:
+                  email:
+                    type: string
+                    format: email
+                    example: aritrikdas@gmail.com
+                  confirmationCode:
+                    type: string
+                    description: temporary password received in the mail.
+                    example: "******"
+                  password:
+                    type: string
+                    description: New Password which user wants to save.
+                    example: "******"
+    
+
+
+components:
+  schemas:
+    userSignUpRequestModel:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: Aritrik
+        lastName:
+          type: string
+          example: Das
+        email:
+          type: string
+          format: email
+          example: aritrikdas@gmail.com
+        mobile:
+          type: number
+          example: 919830407236
+        role:
+          type: string
+          enum:
+            - sampleUser
+            - sampleAdmin
+
+    userSignUpsuccessResponseModel:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/userSignUpRequestModel'
+        - type: object
+          properties:
+            userId:
+              type: string
+              example: 8f044881-3b9b-4cd1-905c-b4a1faac6176
+            UserCreateDate:
+              type: string
+              format: date
+              example: '2021-12-24T12:55:32.593Z'
+            UserLastModifiedDate:
+              type: string
+              format: date
+              example: '2021-12-24T12:55:32.593Z'
+
+    VerifyOtpRequest:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          example: xxxxxx
+
+    SetNewPasswordRequestModel:
+      type: object
+      required:
+        - session
+        - ChallengeName
+        - password
+      properties:
+        password:
+          type: string
+          example: xxxxxx
+          minimum: 6
+        session:
+          type: string
+          example: xxxxxx
+        ChallengeName:
+          type: string
+          example: xxxxxx
+
+    NewPasswordRequiredResponse:
+      properties:
+        statusCode:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: ok
+        data:
+          type: object
+          properties:
+            userId: 
+              type: string
+              example: cfc2a792-e2f0-4d40-82ff-ef39afb8ecfc
+            email:
+              type: string
+              example: aritrikdas@gmail.com
+            ChallengeName:
+              type: string
+              example: NEW_PASSWORD_REQUIRED
+            Session:
+              type: string
+              example: QIAAAAADAAAEAAAAAAAAAAAAAAAAAD2PLmBdB95g7uiMTELyvq5_____wAAAAEAAAAAAAAAAAAAAAEAAADVJt06vyS0g...
+            
+    LoginRequestModel:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          example: aritrikdas@gmail.com
+        password:
+          type: string
+          example: xxxxxx
+        angshu:
+          type: string
+          example: xxxxxx
+
+    LoginSuccessResponseModel:
+      properties:
+        statusCode:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: ok
+        data:
+          type: object
+          properties:
+            AccessToken:
+              type: string
+              example: >-
+                eyJraWQiOiJGV2tUY2xLbGlGR1dqdWRrSURuVDY0NlRFaHN0cER6bkltQ3pPUitkdjJBPSIsImFsZyI6IlJTMjU2In0.eyJvcmlnaW5fanRpIjoiY2QwNjY5Y2Yt...
+              description: token which needs to be passed in the request header.
+            ExpiresIn:
+              type: number
+              default: 3600
+              description: Accesstoken validity duration.
+            TokenType:
+              type: string
+              default: Bearer
+            RefreshToken:
+              type: string
+              example: eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYWxnIjoiUl...
+              description: Token required to get new AccessToken
+            IdToken:
+              type: string
+              example: eyJraWQiOiJ5VzV3aDRrdTZCNEJxT2IwRlpFSHp...
+
+    refreshTokenRequestModel:
+      type: object
+      required:
+        - RefreshToken
+      properties:
+        RefreshToken:
+          type: string
+          example: eyJjdHkiOiJKV1QiLCJlbmMiOiJBMjU2R0NNIiwiYW...
+
+    getPreSignedURL:
+      type: object
+      required:
+        - filename
+      properties:
+        filename:
+          type: string
+          example: hello.jpg
+
+    updateProfilePicRequestModel:
+      type: object
+      required:
+        - profilePic
+      properties:
+        profilePic:
+          type: string
+          example: hello.jpg
+
+    updateProfilePicResponseModel:
+      properties:
+        statusCode:
+          type: number
+          example: 200
+        message:
+          type: string
+          example: ok
+        data:
+          type: object
+          properties:
+            ExpiresIn:
+              type: number
+              default: 3600
+              description: Accesstoken validity duration.
+            TokenType:
+              type: string
+              default: Bearer
+
+    clinicModel:
+      type: object
+      properties:
+        name:
+          type: string
+          example: London Dental Centre
+        clinicAddr1:
+          type: string
+          example: 109 Lever St, 
+        clinicAddr2:
+          type: string
+          example: London EC1V 3RQ, United Kingdom
+        clinicCity:
+          type: string
+          example: London
+        clinicCounty:
+          type: string
+          example: london
+        clinicZipCode:
+          type: string
+          example: EX1 1QT

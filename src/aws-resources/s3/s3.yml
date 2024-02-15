@@ -1,0 +1,148 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: create a AWS s3 bucket to keep the common images for Vittaware
+Resources:
+  S3CommonPortalBucket:
+    # DeletionPolicy: Retain #bucket to be retained even if someone deletes the stack
+    Type: 'AWS::S3::Bucket'
+    # Description: S3 bucket to keep all the images
+    Properties:
+      BucketName: vw-${self:provider.stage}-portal-bucket
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        # BlockPublicAcls: true
+        # BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      # # keep bucker encryption disabled for this one
+      ## will setup cors if required
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+              - PUT
+            AllowedOrigins:
+              - "*"
+      #     Id: OpenCors
+      #     MaxAge: '3600'
+
+  VWPortalBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: S3CommonPortalBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal: "*"
+          Action: s3:GetObject
+          Resource:
+            Fn::Sub: arn:aws:s3:::${S3CommonPortalBucket}/*
+    # Properties:
+    #   Bucket:
+    #     Ref: S3CommonPortalBucket
+    #   PolicyDocument:
+    #     Version: '2012-10-17'
+    #     Statement:
+    #     - Effect: Allow
+    #       Principal: "*"
+    #       Action: 
+    #         - s3:GetObject
+    #         - s3:PutBucketPolicy
+    #       Resource:
+    #         Fn::Sub: arn:aws:s3:::${S3CommonPortalBucket}/*
+  # # Configure Access to CloudFroun
+  VWPortalBucketCloudFrontOriginAccessIdentity:
+    Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Ref S3CommonPortalBucket
+
+  # Configure CloudFront
+  VWPortalBucketCloudFrontDistribution:
+    Type: "AWS::CloudFront::Distribution"
+    Properties:
+      DistributionConfig:
+        CustomErrorResponses:
+          - ErrorCode: 403 # not found
+            ResponseCode: 404
+            ResponsePagePath: "/index.html"
+        DefaultCacheBehavior:
+          AllowedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          CachedMethods:
+            - GET
+            - HEAD
+            - OPTIONS
+          Compress: true
+          DefaultTTL: 3600 # in seconds
+          ForwardedValues:
+            Cookies:
+              Forward: none
+            QueryString: false
+          MaxTTL: 86400 # in seconds
+          MinTTL: 60 # in seconds
+          TargetOriginId: s3origin
+          ViewerProtocolPolicy: "allow-all"
+        # This DefaultRootObject configuration is not enough.
+        DefaultRootObject: "/index.html"
+        Enabled: true
+        HttpVersion: http2
+        Origins:
+          - DomainName: !GetAtt "S3CommonPortalBucket.DomainName"
+            Id: s3origin
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${VWPortalBucketCloudFrontOriginAccessIdentity}"
+        PriceClass: "PriceClass_All"
+
+  # Create an IAM user with Access Keys to enable automated deployment of the website to this bucket
+  VWPortalBucketUser:
+    Type: "AWS::IAM::User"
+    Properties:
+      UserName: VW-${self:provider.stage}-portal-user
+      Policies:
+        - PolicyName: !Sub "publish-to-${S3CommonPortalBucket}"
+          PolicyDocument:
+            Statement:
+              - Action: "s3:*"
+                Effect: Allow
+                Resource:
+                  - !Sub "arn:aws:s3:::${S3CommonPortalBucket}"
+                  - !Sub "arn:aws:s3:::${S3CommonPortalBucket}/*"
+
+  VWPortalBucketUserCredentials:
+    Type: "AWS::IAM::AccessKey"
+    Properties:
+      UserName: !Ref VWPortalBucketUser
+
+Outputs:
+  Bucket:
+    Description: "S3 Bucket Name"
+    Value: !Ref S3CommonPortalBucket
+    Export:
+      Name: vw-${self:provider.stage}-portal-bucket
+  BucketUrl:
+    Description: "S3 Bucket Url"
+    Value: !GetAtt "S3CommonPortalBucket.WebsiteURL"
+    Export:
+      Name: vw-${self:provider.stage}-portal-bucket-url
+  AccessKeyId:
+    Description: "S3 Access Key"
+    Value: !Ref VWPortalBucketUserCredentials
+    Export:
+      Name: vw-${self:provider.stage}-Portal-S3UserAccessKeyId
+  AccessKeySecret:
+    Description: "S3 Secret Key"
+    Value: !GetAtt VWPortalBucketUserCredentials.SecretAccessKey
+    Export:
+      Name: vw-${self:provider.stage}-Portal-S3UserAccessKeySecret
+  DistributionId:
+    Description: "CloudFront Distribution ID"
+    Value: !Ref VWPortalBucketCloudFrontDistribution
+  Domain:
+    Description: "Cloudfront Domain"
+    Value: !GetAtt VWPortalBucketCloudFrontDistribution.DomainName

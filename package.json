@@ -1,0 +1,28 @@
+{
+    "name": "mysample-auth",
+    "version": "1.0.0",
+    "description": "",
+    "author": "Sahasrangshu Guha <sguha1988.life@gmail.com>",
+    "license": "MIT",
+    "keywords": [],
+    "engines": {
+        "node": ">=18.12.1"
+    },
+    "dependencies": {
+        "@aws-sdk/client-api-gateway": "3.309.0",
+        "@aws-sdk/client-apigatewaymanagementapi": "3.309.0",
+        "@aws-sdk/client-cognito-identity-provider": "3.301.0",
+        "@aws-sdk/client-s3": "3.312.0",
+        "@aws-sdk/s3-request-presigner": "3.312.0",
+        "http-status-codes": "2.3.0",
+        "openapi-backend": "5.9.1",
+        "source-map-support": "0.5.21"
+    },
+    "devDependencies": {
+        "serverless": "3.29.0",
+        "serverless-export-env": "2.2.0",
+        "serverless-iam-roles-per-function": "3.2.0",
+        "serverless-offline": "^13.3.3",
+        "serverless-offline-assume-role": "1.0.0"
+    }
+}
