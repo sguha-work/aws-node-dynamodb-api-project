@@ -58,13 +58,13 @@ provider:
   #           # - cognito-idp:AdminAddUserToGroup
   #         Resource: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*
 
-package:
-  individually: true
-  excludeDevDependencies: true
-  exclude:
-    - node_modules/**/*
-  include:
-    - build/index.handler
+# package:
+#   individually: true
+#   excludeDevDependencies: true
+#   exclude:
+#     - node_modules/**/*
+#   include:
+#     - build/index.handler
 
 functions:
   - ${file(src/aws-resources/lambda/functions.yml)}
@@ -142,5 +142,5 @@ resources:
   - ${file(src/aws-resources/apigateway/RestApi.yml)}
 
   # S3 bucket for the respective portal & static resources.
-  # - ${file(resources/s3/s3.yml)}
+  - ${file(src/aws-resources/s3/s3.yml)}
 
