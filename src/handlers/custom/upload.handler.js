@@ -1,7 +1,7 @@
 import path from 'path';
 import { ReasonPhrases } from 'http-status-codes';
-import ResponseHelper from './../helpers/response.helper.js';
-import UserModel from './../models/user.model.js';
+import ResponseHelper from '../../helpers/response.helper.js';
+import UserModel from '../../models/user.model.js';
 
 // modules required for s3
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";

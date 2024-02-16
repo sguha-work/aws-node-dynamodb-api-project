@@ -1,5 +1,5 @@
 import { ReasonPhrases } from 'http-status-codes';
-import ResponseHelper from './../helpers/response.helper.js';
+import ResponseHelper from '../../helpers/response.helper.js';
 
 import { CognitoIdentityProviderClient, AdminInitiateAuthCommand, AdminUpdateUserAttributesCommand } from "@aws-sdk/client-cognito-identity-provider";
 

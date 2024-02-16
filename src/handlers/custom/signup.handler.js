@@ -1,10 +1,10 @@
 // import {APIGatewayProxyEvent} from 'aws-lambda';
 import { ReasonPhrases } from 'http-status-codes';
-import ResponseHelper from './../helpers/response.helper.js';
+import ResponseHelper from '../../helpers/response.helper.js';
 // import { SGUser } from '../modules/interfaces/User.Interface';
-import UserModel from './../models/user.model.js';
-import DBService from './../services/db.service.js';
-import NOTIFICATION from './../constants/constants.js';
+import UserModel from '../../models/user.model.js';
+import DBService from '../../services/db.service.js';
+import NOTIFICATION from '../../constants/constants.js';
 import {
     CognitoIdentityProviderClient,
     AdminCreateUserCommand,

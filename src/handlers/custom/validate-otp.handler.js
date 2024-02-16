@@ -1,9 +1,9 @@
 // import { APIGatewayProxyEvent } from 'aws-lambda';
 import { ReasonPhrases } from 'http-status-codes';
-import ResponseHelper from './../helpers/response.helper.js';
+import ResponseHelper from '../../helpers/response.helper.js';
 //Load 
-import  UserModel  from './../models/user.model.js';
-import NOTIFICATION from './../constants/constants.js';
+import  UserModel  from '../../models/user.model.js';
+import NOTIFICATION from '../../constants/constants.js';
 
 import {
     CognitoIdentityProviderClient,

@@ -1,6 +1,6 @@
 import { ReasonPhrases } from 'http-status-codes';
 import {CognitoIdentityProviderClient, ConfirmForgotPasswordCommand, ForgotPasswordCommand } from "@aws-sdk/client-cognito-identity-provider";
-import ResponseHelper from './../helpers/response.helper.js';
+import ResponseHelper from '../../helpers/response.helper.js';
 
 
 class ForgotPasswordHandlerClass extends ResponseHelper {

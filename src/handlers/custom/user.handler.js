@@ -1,7 +1,7 @@
 import { ReasonPhrases } from 'http-status-codes';
-import ResponseHelper from './../helpers/response.helper.js';
-import UserModel from './../models/user.model.js';
-import NOTIFICATION from './../constants/constants.js';
+import ResponseHelper from '../../helpers/response.helper.js';
+import UserModel from '../../models/user.model.js';
+import NOTIFICATION from '../../constants/constants.js';
 
 class UserHandlerClass extends ResponseHelper {
     static instance() {
