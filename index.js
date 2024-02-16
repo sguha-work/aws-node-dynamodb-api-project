@@ -14,7 +14,7 @@ import UserHandler from './src/handlers/user.handler.js';
 import ForgotPasswordHandler from './src/handlers/forgot-password.handler.js';
 
 // create api from definition
-const api = new OpenAPIBackend({ definition: './openapi.yml' });
+const api = new OpenAPIBackend({ definition: './openapi.yml', quick: true });
 
 // register some handlers
 api.register({

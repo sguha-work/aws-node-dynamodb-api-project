@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 //     useUnifiedTopology: boolean
 // }
 let database;
-const mongoUrl = process.env.DBConnURL;
+const mongoUrl = process.env.DBConnURL??"mongodb+srv://angshu_mongo:HhWjjsZoi1wDqZkj@cluster0.1f9ag.mongodb.net/bwUsers?authSource=admin&replicaSet=atlas-gfk4y7-shard-0&readPreference=primary&ssl=true";
 class DBServiceClass {
 
     constructor() {

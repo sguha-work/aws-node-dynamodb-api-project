@@ -101,7 +101,7 @@ custom:
     S3UserAccessKeyId: AKIA2QY4RQUJLG42QBNQ
     S3UserAccessKeySecret: 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
     portalBucketName: sg-${self:provider.stage}-534277037489-portal-bucket
-    DBConnURL: mongodb+srv://sg_dev:4oQ6a8703GMcLPGB@sgdevdb.sx7osjz.mongodb.net/
+    DBConnURL: mongodb+srv://angshu_mongo:HhWjjsZoi1wDqZkj@cluster0.1f9ag.mongodb.net/bwUsers?authSource=admin&replicaSet=atlas-gfk4y7-shard-0&readPreference=primary&ssl=true
     memorySize: 128
     timeout: 20
     logRetentionInDays: 1
@@ -119,7 +119,8 @@ custom:
     #   # }
     # S3UserAccessKeySecret: { "Fn::ImportValue": "sg-${self:provider.stage}-Portal-S3UserAccessKeySecret"}
     portalBucketName: sg-${self:provider.stage}-534277037489-portal-bucket
-    DBConnURL: mongodb+srv://sgProdUser:ktSBBqwNWdeNutfA@sgprodinstance.qufisvf.mongodb.net/?retryWrites=true&w=majority
+    DBConnURL: mongodb+srv://angshu_mongo:HhWjjsZoi1wDqZkj@cluster0.1f9ag.mongodb.net/bwUsers?authSource=admin&replicaSet=atlas-gfk4y7-shard-0&readPreference=primary&ssl=true
+    
     memorySize: 2048
     timeout: 15
     logRetentionInDays: 5
