@@ -17,13 +17,13 @@ export class VWSetNewPasswordHandler extends responseHandler {
         return new VWSetNewPasswordHandler();
     }
 
-    async setNewPassword(c: any, event: APIGatewayProxyEvent) {
+    async setNewPassword(c, event) {
         console.info("setNewPassword handler invoked");
         try {
             const userId = c.request.params.userId;
-            const user: VWUserDocument = await UserModel.findById(userId);
+            const user = await UserModel.findById(userId);
             if (!user) throw ({ message: NOTIFICATION.USER_NOT_FOUND, status: ReasonPhrases.NOT_FOUND });
-            const email: string = String(user.email);
+            const email = user.email;
 
 
             const userObject = c.request.requestBody;
@@ -31,7 +31,7 @@ export class VWSetNewPasswordHandler extends responseHandler {
 
             //instanciate AWS-SDK cognito provider
             const client = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION });
-            const userSetPasswordCmdInput: AdminRespondToAuthChallengeCommandInput = {
+            const userSetPasswordCmdInput = {
                 ChallengeName: userObject.ChallengeName,
                 ClientId: process.env.COGNITO_CLIENT_ID,
                 UserPoolId: process.env.COGNITO_USER_POOL_ID,
@@ -42,7 +42,7 @@ export class VWSetNewPasswordHandler extends responseHandler {
                 Session: userObject.session,
             }
             const userSetPasswordCmd = new AdminRespondToAuthChallengeCommand(userSetPasswordCmdInput);
-            const userSetPassword: AdminRespondToAuthChallengeCommandOutput = await client.send(userSetPasswordCmd);
+            const userSetPassword = await client.send(userSetPasswordCmd);
 
             const response = {
                 status: ReasonPhrases.OK,

@@ -8,7 +8,7 @@ export class VWLoginHandler extends responseHandler {
     static instance() {
         return new VWLoginHandler();
     }
-    async login(c: any, event: APIGatewayProxyEvent) {// event: APIGatewayProxyEvent
+    async login(c, event) {// event: APIGatewayProxyEvent
         console.info("Login Handler invoked successfully!!!");
         const response = {
             status: '',
@@ -32,13 +32,13 @@ export class VWLoginHandler extends responseHandler {
                     },
                 }
             );
-            const userLogin: AdminInitiateAuthCommandOutput = await client.send(userLoginCmd);
+            const userLogin = await client.send(userLoginCmd);
             console.log("User Login  Response --->>>>", userLogin);
 
             
             if (userLogin.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
                 // update the email as verified
-                const markEmailVerifiedCmdObj: AdminUpdateUserAttributesCommandInput = {
+                const markEmailVerifiedCmdObj = {
                     UserAttributes: [
                         {
                             Name: "email_verified" /* required */,

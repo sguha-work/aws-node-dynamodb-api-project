@@ -12,7 +12,7 @@ class VWForgotPassword extends responseHandler {
         return new VWForgotPassword();
     }
 
-    async forgotPassword(c: any) {
+    async forgotPassword(c) {
         try {
             console.log("forgotPassword invoked >>>>>");
             const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID;
@@ -23,13 +23,13 @@ class VWForgotPassword extends responseHandler {
             const client = new CognitoIdentityProviderClient(poolConfig);
             const { email } = c.request.requestBody;
 
-            const forgotPasswordInput: ForgotPasswordCommandInput = {
+            const forgotPasswordInput = {
                 ClientId: process.env.COGNITO_CLIENT_ID,
                 Username: email
             }
 
             const forgotPasswordCmd = new ForgotPasswordCommand(forgotPasswordInput);
-            const forgotPasswordResponse: ForgotPasswordCommandOutput = await client.send(forgotPasswordCmd);
+            const forgotPasswordResponse = await client.send(forgotPasswordCmd);
 
             const response = {
                 status: ReasonPhrases.OK,
@@ -52,7 +52,7 @@ class VWForgotPassword extends responseHandler {
         }
     }
 
-    async confirmForgotPassword(c: any) {
+    async confirmForgotPassword(c) {
         console.log("confirmForgotPassword Invoked");
         try {
             const COGNITO_USER_POOL_ID = process.env.COGNITO_USER_POOL_ID;
@@ -63,7 +63,7 @@ class VWForgotPassword extends responseHandler {
             const client = new CognitoIdentityProviderClient(poolConfig);
             const { email, confirmationCode, password } = c.request.requestBody;
 
-            const confirmForgotPassInput: ConfirmForgotPasswordCommandInput = {
+            const confirmForgotPassInput = {
                 ClientId: process.env.COGNITO_CLIENT_ID,
                 ConfirmationCode: confirmationCode,
                 Username: email,
@@ -71,7 +71,7 @@ class VWForgotPassword extends responseHandler {
             }
 
             const confirmForgotPassCmd = new ConfirmForgotPasswordCommand(confirmForgotPassInput);
-            const confirmForgotPassResp: ConfirmForgotPasswordCommandOutput = await client.send(confirmForgotPassCmd);
+            const confirmForgotPassResp = await client.send(confirmForgotPassCmd);
 
             console.log(`${email} confirmForgotPassResp  ${JSON.stringify(confirmForgotPassResp, null, 4)}`);
             const response = {

@@ -1,5 +1,4 @@
 import { model, Schema } from "mongoose";
-import { VWUserDocument } from '../interfaces/User.Interface';
 // import  UserSchema  from '../dbSchemas/User.Schema';
 
 // import { VWClinicDocument, VWClinicModel } from '../interfaces/Clinic.interface';
@@ -39,4 +38,4 @@ const UserSchema = new Schema(
 
 
 
-export const UserModel = model<VWUserDocument>("users", UserSchema);
+export const UserModel = model("users", UserSchema);

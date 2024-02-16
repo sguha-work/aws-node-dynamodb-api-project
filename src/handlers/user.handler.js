@@ -12,12 +12,12 @@ class VWUserHandler extends responseHandler {
     }
 
     // method to return user object filtered by userID
-    async getUser(c: any) {
+    async getUser(c) {
         console.log("updateUser Invoked");
         try {
 
             const { userID } = c.request.params;
-            const user: VWUserDocument = await UserModel.findOne({ _id: userID });
+            const user = await UserModel.findOne({ _id: userID });
             if (!user) throw ({ message: NOTIFICATION.USER_NOT_FOUND, status: ReasonPhrases.NOT_FOUND });
             console.log("Updated User details ::: ", JSON.stringify(user));
             const response = {

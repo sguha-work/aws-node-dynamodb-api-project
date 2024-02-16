@@ -21,7 +21,7 @@ export class VWValidateOTPHandler extends responseHandler {
         return new VWValidateOTPHandler();
     }
 
-    async ValidateOTP(c: any) { // event: APIGatewayProxyEvent
+    async ValidateOTP(c) { // event: APIGatewayProxyEvent
         console.log("ValidateOTP invoked");
         const response = {
             status: '',
@@ -29,16 +29,16 @@ export class VWValidateOTPHandler extends responseHandler {
         };
         try {
             const userId = c.request.params.userId;
-            const user: VWUserDocument = await UserModel.findById(userId);
+            const user = await UserModel.findById(userId);
             if (!user) throw ({ message: NOTIFICATION.USER_NOT_FOUND, status: ReasonPhrases.NOT_FOUND });
-            const email: string = String(user.email);
+            const email = user.email;
 
             const userObject = c.request.requestBody;
             console.log("Login request object ---->>> ", userObject);
 
             //instanciate AWS-SDK cognito provider
             const client = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION });
-            const initiateAuthCmdObj: AdminInitiateAuthCommandInput = {
+            const initiateAuthCmdObj = {
                 AuthFlow: "ADMIN_NO_SRP_AUTH",
                 ClientId: process.env.COGNITO_CLIENT_ID,
                 UserPoolId: process.env.COGNITO_USER_POOL_ID,
@@ -49,11 +49,11 @@ export class VWValidateOTPHandler extends responseHandler {
             };
             const initiateAuthCmd = new AdminInitiateAuthCommand(initiateAuthCmdObj);
 
-            const userValidateOTP: AdminInitiateAuthCommandOutput = await client.send(initiateAuthCmd);
+            const userValidateOTP = await client.send(initiateAuthCmd);
             console.log("userLogin response --->>>>", userValidateOTP);
 
             if (userValidateOTP.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
-                const markEmailVerifiedCmdObj: AdminUpdateUserAttributesCommandInput = {
+                const markEmailVerifiedCmdObj = {
                     UserAttributes: [
                         {
                             Name: "email_verified" /* required */,

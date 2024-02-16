@@ -20,20 +20,20 @@ export class VWRefreshTokenHandler extends responseHandler {
         return new VWRefreshTokenHandler();
     }
 
-    async refreshToken(c: any, event: APIGatewayProxyEvent) { // event: APIGatewayProxyEvent
+    async refreshToken(c, event) { // event: APIGatewayProxyEvent
         console.log("refreshToken handler invoked");
         try {
             const userId = c.request.params.userId;
-            const user: VWUserDocument = await UserModel.findById(userId);
+            const user = await UserModel.findById(userId);
             if (!user) throw ({ message: NOTIFICATION.USER_NOT_FOUND, status: ReasonPhrases.NOT_FOUND });
-            const email: string = String(user.email);
+            const email = String(user.email);
 
             const userObject = c.request.requestBody;
             console.log("setNewPassword request object ---->>> ", userObject);
 
             //instanciate AWS-SDK cognito provider
             const client = new CognitoIdentityProviderClient({ region: process.env.AWS_REGION });
-            const getNewTokenCmdInput: InitiateAuthCommandInput = {
+            const getNewTokenCmdInput = {
                 AuthFlow: "REFRESH_TOKEN_AUTH",
                 ClientId: process.env.COGNITO_CLIENT_ID,
                 // UserPoolId: process.env.COGNITO_USER_POOL_ID,
@@ -43,7 +43,7 @@ export class VWRefreshTokenHandler extends responseHandler {
                 },
             }
             const getNewTokenCmd = new InitiateAuthCommand(getNewTokenCmdInput);
-            const newToken: InitiateAuthCommandOutput = await client.send(getNewTokenCmd);
+            const newToken = await client.send(getNewTokenCmd);
 
             const response = {
                 status: ReasonPhrases.OK,

@@ -16,7 +16,7 @@ import {
     PutObjectCommandInput
 } from "@aws-sdk/client-s3";
 
-const s3ClientConfigParams: S3ClientConfig = {
+const s3ClientConfigParams = {
     region: process.env.AWS_REGION,
     credentials: {
         accessKeyId: process.env.S3UserAccessKeyId,
@@ -32,7 +32,7 @@ class VWS3UploadHandler extends responseHandler {
     }
 
     // Function to generate the pre-signed url to upload file in S3
-    async putPPSignedURL(c: any, event: APIGatewayProxyEvent) { // event: APIGatewayProxyEvent
+    async putPPSignedURL(c, event) { // event: APIGatewayProxyEvent
         console.log("Invoked putPPSignedURL");
         try {
             const { userID } = c.request.params;
@@ -42,9 +42,9 @@ class VWS3UploadHandler extends responseHandler {
             const filePath = `dp/${userID}/${Buffer.from(`${requestFileName}_${Date.now()}`).toString('base64')}${uploadFileExt}`;
 
 
-            const client: S3Client = new S3Client(s3ClientConfigParams);
+            const client = new S3Client(s3ClientConfigParams);
             // parameters to get upload url for the respective file path
-            const putObjectURLParams: PutObjectCommandInput = {
+            const putObjectURLParams = {
                 Bucket: process.env.stlBucketName,
                 Key: filePath
             };
@@ -66,13 +66,13 @@ class VWS3UploadHandler extends responseHandler {
     }
 
     // updateProfilePic in the mongoDB
-    async updateProfilePic(c: any, event: APIGatewayProxyEvent) { // event: APIGatewayProxyEvent
+    async updateProfilePic(c, event) { // event: APIGatewayProxyEvent
         console.log("Update Profilepic handler invoked");
         try {
             const { userID } = c.request.params;
             const { profilePic } = c.request.requestBody;
 
-            const user: VWUserDocument = await UserModel.findOneAndUpdate({ _id: userID }, { profilePic }, {
+            const user = await UserModel.findOneAndUpdate({ _id: userID }, { profilePic }, {
                 new: true
             });
 

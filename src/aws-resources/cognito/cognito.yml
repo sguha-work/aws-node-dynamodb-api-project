@@ -54,7 +54,7 @@ Resources:
   CognitoUserPoolGroup:
     Type: "AWS::Cognito::UserPoolGroup"
     Properties:
-      GroupName: vwUser
+      GroupName: sgUser
       Precedence: 2
       Description: This Group is for Regular users in Vitaware.
       UserPoolId:
@@ -63,7 +63,7 @@ Resources:
   CognitoDealerPoolGroup:
     Type: "AWS::Cognito::UserPoolGroup"
     Properties:
-      GroupName: vwTechnician
+      GroupName: sgTechnician
       Precedence: 3
       Description: This Group is for Dealers in Vitaware.
       UserPoolId:

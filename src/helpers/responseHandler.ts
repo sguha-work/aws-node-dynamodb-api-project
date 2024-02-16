@@ -19,7 +19,7 @@ const headers = {
 export default abstract class responseHandler {
     protected constructor() { }
 
-    public async sendResponse(response: any): Promise<APIGatewayProxyResult> {
+    public async sendResponse(response) {
         console.info("sendResponse >>>", response);
         try {
             const responseStatusCode: number = response.status ? getStatusCode(response.status) : StatusCodes.OK;
@@ -39,7 +39,7 @@ export default abstract class responseHandler {
         }
     }
 
-    public async sendError(response: any): Promise<APIGatewayProxyResult> {
+    public async sendError(response) {
         console.info("sendResponse error invoked>>>", response);
         const responseStatusCode: number = response.status ? getStatusCode(response.status) : StatusCodes.INTERNAL_SERVER_ERROR;
         try {

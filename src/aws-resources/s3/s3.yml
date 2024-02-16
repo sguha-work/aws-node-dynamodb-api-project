@@ -6,7 +6,7 @@ Resources:
     Type: 'AWS::S3::Bucket'
     # Description: S3 bucket to keep all the images
     Properties:
-      BucketName: vw-${self:provider.stage}-portal-bucket
+      BucketName: sg-${self:provider.stage}-portal-bucket
       AccessControl: Private
       PublicAccessBlockConfiguration:
         # BlockPublicAcls: true
@@ -124,22 +124,22 @@ Outputs:
     Description: "S3 Bucket Name"
     Value: !Ref S3CommonPortalBucket
     Export:
-      Name: vw-${self:provider.stage}-portal-bucket
+      Name: sg-${self:provider.stage}-portal-bucket
   BucketUrl:
     Description: "S3 Bucket Url"
     Value: !GetAtt "S3CommonPortalBucket.WebsiteURL"
     Export:
-      Name: vw-${self:provider.stage}-portal-bucket-url
+      Name: sg-${self:provider.stage}-portal-bucket-url
   AccessKeyId:
     Description: "S3 Access Key"
     Value: !Ref VWPortalBucketUserCredentials
     Export:
-      Name: vw-${self:provider.stage}-Portal-S3UserAccessKeyId
+      Name: sg-${self:provider.stage}-Portal-S3UserAccessKeyId
   AccessKeySecret:
     Description: "S3 Secret Key"
     Value: !GetAtt VWPortalBucketUserCredentials.SecretAccessKey
     Export:
-      Name: vw-${self:provider.stage}-Portal-S3UserAccessKeySecret
+      Name: sg-${self:provider.stage}-Portal-S3UserAccessKeySecret
   DistributionId:
     Description: "CloudFront Distribution ID"
     Value: !Ref VWPortalBucketCloudFrontDistribution

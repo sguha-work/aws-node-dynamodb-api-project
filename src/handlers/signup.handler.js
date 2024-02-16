@@ -59,8 +59,8 @@ class SampleSignupHandler extends responseHandler {
             if (!cognitoUser.User || !cognitoUser.User.Username)
                 throw ({ message: NOTIFICATION.COGNITO_DATA_INVALID, status: ReasonPhrases.FAILED_DEPENDENCY });
 
-            // set default role to 'vwUser' if no group is selected
-            userObject.role = userObject.role || 'vwUser';
+            // set default role to 'sgUser' if no group is selected
+            userObject.role = userObject.role || 'sgUser';
             var addUserToGroupParams = {
                 GroupName: userObject.role, /* required */
                 UserPoolId: process.env.COGNITO_USER_POOL_ID, /* required */

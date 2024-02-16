@@ -1,5 +1,5 @@
 # serverless.yml
-service: vw-user-management
+service: sg-user-management
 variablesResolutionMode: 20210219
 # useDotenv: true
 
@@ -13,7 +13,7 @@ provider:
   logs:
     restApi: true
   deploymentBucket:
-    name: vw-lambda-${self:provider.region}-534277037489-layers
+    name: sg-lambda-${self:provider.region}-534277037489-layers
     # On deployment, serverless prunes artifacts older than this limit (default: 5)
     maxPreviousDeploymentArtifacts: 3
     # Prevents public access via ACLs or bucket policies (default: false)
@@ -40,7 +40,7 @@ provider:
     # 'Fn::GetAtt':
     #   - VWPortalBucketUserCredentials
     #   - SecretAccessKey
-    #{'Fn::ImportValue': 'vw-${self:provider.stage}-Portal-S3UserAccessKeySecret'}
+    #{'Fn::ImportValue': 'sg-${self:provider.stage}-Portal-S3UserAccessKeySecret'}
     # COGNITO_CLIENT_ID: ${self:custom.${self:provider.stage}.COGNITO_CLIENT_ID}
     # COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
     # COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
@@ -76,38 +76,38 @@ plugins:
 
 custom:
   local:
-    Stack: vwAPILocalStack
+    Stack: sgAPILocalStack
     COGNITO_USER_POOL_ID: { Ref: CognitoUserPool }
     COGNITO_CLIENT_ID: { Ref: CognitoUserPoolClient }
     S3UserAccessKeyId: { Ref: VWPortalBucketUserCredentials }
-    #  {'Fn::ImportValue': 'vw-${self:provider.stage}-Portal-S3UserAccessKeyId'}
+    #  {'Fn::ImportValue': 'sg-${self:provider.stage}-Portal-S3UserAccessKeyId'}
     S3UserAccessKeySecret:
       {
-        "Fn::ImportValue": "vw-${self:provider.stage}-Portal-S3UserAccessKeySecret",
+        "Fn::ImportValue": "sg-${self:provider.stage}-Portal-S3UserAccessKeySecret",
       }
-    portalBucketName: vw-${self:provider.stage}-534277037489-portal-bucket
-    DBConnURL: mongodb+srv://vw_dev:4oQ6a8703GMcLPGB@vwdevdb.sx7osjz.mongodb.net/
+    portalBucketName: sg-${self:provider.stage}-534277037489-portal-bucket
+    DBConnURL: mongodb+srv://sg_dev:4oQ6a8703GMcLPGB@sgdevdb.sx7osjz.mongodb.net/
     memorySize: 128
     timeout: 20
     logRetentionInDays: 1
 
   dev:
-    Stack: vwAPIDevStack
+    Stack: sgAPIDevStack
     COGNITO_USER_POOL_ID: { Ref: CognitoUserPool }
     COGNITO_CLIENT_ID: { Ref: CognitoUserPoolClient }
     # S3UserAccessKeyId: 
     #   Ref: VWPortalBucketUserCredentials
-    # S3UserAccessKeySecret: { "Fn::ImportValue": "vw-${self:provider.stage}-Portal-S3UserAccessKeySecret"}
+    # S3UserAccessKeySecret: { "Fn::ImportValue": "sg-${self:provider.stage}-Portal-S3UserAccessKeySecret"}
     S3UserAccessKeyId: AKIA2QY4RQUJLG42QBNQ
     S3UserAccessKeySecret: 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
-    portalBucketName: vw-${self:provider.stage}-534277037489-portal-bucket
-    DBConnURL: mongodb+srv://vw_dev:4oQ6a8703GMcLPGB@vwdevdb.sx7osjz.mongodb.net/
+    portalBucketName: sg-${self:provider.stage}-534277037489-portal-bucket
+    DBConnURL: mongodb+srv://sg_dev:4oQ6a8703GMcLPGB@sgdevdb.sx7osjz.mongodb.net/
     memorySize: 128
     timeout: 20
     logRetentionInDays: 1
 
   prod:
-    Stack: vwAPIProdStack
+    Stack: sgAPIProdStack
     COGNITO_USER_POOL_ID: { Ref: CognitoUserPool }
     COGNITO_CLIENT_ID: { Ref: CognitoUserPoolClient }
     S3UserAccessKeyId: AKIAXYZLETWY52FH7MWT
@@ -115,11 +115,11 @@ custom:
     # S3UserAccessKeyId: 
     #   Ref: VWPortalBucketUserCredentials
     #   # {
-    #   #   "Fn::ImportValue": "vw-${self:provider.stage}-Portal-S3UserAccessKeyId",
+    #   #   "Fn::ImportValue": "sg-${self:provider.stage}-Portal-S3UserAccessKeyId",
     #   # }
-    # S3UserAccessKeySecret: { "Fn::ImportValue": "vw-${self:provider.stage}-Portal-S3UserAccessKeySecret"}
-    portalBucketName: vw-${self:provider.stage}-534277037489-portal-bucket
-    DBConnURL: mongodb+srv://vwProdUser:ktSBBqwNWdeNutfA@vwprodinstance.qufisvf.mongodb.net/?retryWrites=true&w=majority
+    # S3UserAccessKeySecret: { "Fn::ImportValue": "sg-${self:provider.stage}-Portal-S3UserAccessKeySecret"}
+    portalBucketName: sg-${self:provider.stage}-534277037489-portal-bucket
+    DBConnURL: mongodb+srv://sgProdUser:ktSBBqwNWdeNutfA@sgprodinstance.qufisvf.mongodb.net/?retryWrites=true&w=majority
     memorySize: 2048
     timeout: 15
     logRetentionInDays: 5

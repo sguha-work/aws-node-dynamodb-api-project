@@ -5,8 +5,8 @@ import { ConnectOptions, connect, Connection, connection, disconnect } from "mon
 //     useNewUrlParser: boolean
 //     useUnifiedTopology: boolean
 // }
-let database: Connection;
-const mongoUrl: string = process.env.DBConnURL;
+let database;
+const mongoUrl = process.env.DBConnURL;
 class Dbconn {
 
     constructor() {
@@ -17,7 +17,7 @@ class Dbconn {
         return new Dbconn();
     }
 
-    public async connectMongo(): Promise<void> {
+    public async connectMongo() {
 
         try {
             const options: ConnectOptions = {
@@ -27,9 +27,9 @@ class Dbconn {
                 // autoIndex: true,
                 maxPoolSize: 10,
                 // useFindAndModify: false,
-                // user: 'vw_dev',
+                // user: 'sg_dev',
                 // pass: '4oQ6a8703GMcLPGB',
-                dbName: 'vwDevDB'
+                dbName: 'sgDevDB'
             }
             await connect(mongoUrl, options);
             database = connection;
@@ -43,7 +43,7 @@ class Dbconn {
         // database = Connection;
     }
 
-    public async disconnectMongo(): Promise<void> {
+    public async disconnectMongo() {
         try {
             if (database) {
                 disconnect();

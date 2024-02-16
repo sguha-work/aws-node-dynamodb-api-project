@@ -1,6 +1,6 @@
 userSignup:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-signup-lambda-role
+  iamRoleStatementsName: sg-user-${self:provider.stage}-signup-lambda-role
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -17,7 +17,7 @@ userSignup:
 
 validateOTP:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-valiadteotp-lambda-role
+  iamRoleStatementsName: sg-user-${self:provider.stage}-valiadteotp-lambda-role
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -34,7 +34,7 @@ validateOTP:
 
 userSetNewPassword:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-set-new-password-lambda-role
+  iamRoleStatementsName: sg-user-${self:provider.stage}-set-new-password-lambda-role
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -50,7 +50,7 @@ userSetNewPassword:
 
 userLogin:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-login-lambda-role
+  iamRoleStatementsName: sg-user-${self:provider.stage}-login-lambda-role
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -67,7 +67,7 @@ userLogin:
 
 userRefreshToken:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-refresh-token-lambda-role
+  iamRoleStatementsName: sg-user-${self:provider.stage}-refresh-token-lambda-role
   iamRoleStatements:
     - Effect: "Allow"
       Action:
@@ -83,7 +83,7 @@ userRefreshToken:
 
 updateProfilePic:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-update-profilepic-lambda-role
+  iamRoleStatementsName: sg-user-${self:provider.stage}-update-profilepic-lambda-role
   events:
     - http:
         path: users/{userId}/profile-picture
@@ -96,7 +96,7 @@ updateProfilePic:
 
 putProfilePicSignedURL:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-s3-upload-userpp-lambda-role
+  iamRoleStatementsName: sg-user-${self:provider.stage}-s3-upload-userpp-lambda-role
   environment:
     stlBucketName: ${self:custom.${self:provider.stage}.portalBucketName}
   events:
@@ -111,7 +111,7 @@ putProfilePicSignedURL:
 
 updateUserDetails:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-update-user-details-lambda-role
+  iamRoleStatementsName: sg-user-${self:provider.stage}-update-user-details-lambda-role
   events:
     - http:
         path: users/{userId}
@@ -124,7 +124,7 @@ updateUserDetails:
 
 getUserDetails:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-get-user-details-lambda-role
+  iamRoleStatementsName: sg-user-${self:provider.stage}-get-user-details-lambda-role
   # iamRoleStatements:
   #   - Effect: "Allow"
   #     Action:
@@ -156,7 +156,7 @@ getUserDetails:
 
 forPasswordHandler:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-forgot-password
+  iamRoleStatementsName: sg-user-${self:provider.stage}-forgot-password
   events:
     - http:
         path: users/forgot-password
@@ -165,7 +165,7 @@ forPasswordHandler:
 
 confirmForPasswordHandler:
   handler: index.handler
-  iamRoleStatementsName: vw-user-${self:provider.stage}-confirm-forgot-password
+  iamRoleStatementsName: sg-user-${self:provider.stage}-confirm-forgot-password
   events:
     - http:
         path: users/confirm-forgot-password
