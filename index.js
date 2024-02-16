@@ -1,24 +1,20 @@
-import 'source-map-support/register';
-import * as Lambda from 'aws-lambda';
-import OpenAPIBackend from 'openapi-backend';
+import {OpenAPIBackend} from 'openapi-backend';
 const headers = {
   'content-type': 'application/json',
   'access-control-allow-origin': '*', // lazy cors config
 };
 
-import { signupHandler } from './handlers/signup.handler';
-import { ValidateOTPHandler } from './handlers/validateOTP.handler';
-import { LoginHandler } from './handlers/login.handler';
-import { SetNewPasswordHandler } from './handlers/setNewPassword.handler';
-import { RefreshTokenHandler } from './handlers/refreshToken.handler';
-import { S3UploadHandler } from './handlers/upload.handler';
-import { userHandler } from './handlers/user.handler';
-import { ForgotPasswordHandler } from './handlers/forgotPassword.handler';
-
-export { webSocketHandler } from './handlers/websocket.handler';
+import SignupHandler from './src/handlers/signup.handler.js';
+import ValidateOTPHandler from './src/handlers/validate-otp.handler.js';
+import LoginHandler from './src/handlers/login.handler.js';
+import SetNewPasswordHandler from './src/handlers/set-new-password.handler.js';
+import RefreshTokenHandler from './src/handlers/refresh-token.handler.js';
+import S3UploadHandlerClass from './src/handlers/upload.handler.js';
+import UserHandler from './src/handlers/user.handler.js';
+import ForgotPasswordHandler from './src/handlers/forgot-password.handler.js';
 
 // create api from definition
-const api = new OpenAPIBackend({ definition: './openapi.yml', quick: true });
+const api = new OpenAPIBackend({ definition: './openapi.yml' });
 
 // register some handlers
 api.register({
@@ -42,15 +38,15 @@ api.register({
     body: JSON.stringify({ err: c.validation.errors }),
     headers,
   }),
-  signup: signupHandler.signup,
+  signup: SignupHandler.signup,
   login: LoginHandler.login,
   setNewPassword: SetNewPasswordHandler.setNewPassword,
   refreshToken: RefreshTokenHandler.refreshToken,
   validateOTP: ValidateOTPHandler.ValidateOTP,
-  putProfilePicSignedURL: S3UploadHandler.putPPSignedURL,
-  updateProfilePicture: S3UploadHandler.updateProfilePic,
-  getUserDetails: userHandler.getUser,
-  updateUserDetails: userHandler.updateUser,
+  putProfilePicSignedURL: S3UploadHandlerClass.putPPSignedURL,
+  updateProfilePicture: S3UploadHandlerClass.updateProfilePic,
+  getUserDetails: UserHandler.getUser,
+  updateUserDetails: UserHandler.updateUser,
   forgotPassword: ForgotPasswordHandler.forgotPassword,
   confirmForgotPassword: ForgotPasswordHandler.confirmForgotPassword
 });

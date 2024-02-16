@@ -1,19 +1,13 @@
 import path from 'path';
-
-import { APIGatewayProxyEvent } from 'aws-lambda';
-import responseHandler from '../helpers/responseHandler';
 import { ReasonPhrases } from 'http-status-codes';
-
-import { UserModel } from '../modules/models/user.model';
-import { VWUserDocument } from '../modules/interfaces/User.Interface';
+import ResponseHelper from './../helpers/response.helper.js';
+import UserModel from './../models/user.model.js';
 
 // modules required for s3
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import {
     S3Client,
-    S3ClientConfig,
-    PutObjectCommand,
-    PutObjectCommandInput
+    PutObjectCommand
 } from "@aws-sdk/client-s3";
 
 const s3ClientConfigParams = {
@@ -26,9 +20,9 @@ const s3ClientConfigParams = {
 };
 
 
-class VWS3UploadHandler extends responseHandler {
+class S3UploadHandlerClass extends ResponseHelper {
     static instance() {
-        return new VWS3UploadHandler();
+        return new S3UploadHandlerClass();
     }
 
     // Function to generate the pre-signed url to upload file in S3
@@ -93,5 +87,5 @@ class VWS3UploadHandler extends responseHandler {
         }
     }
 }
-
-export const S3UploadHandler = VWS3UploadHandler.instance();
+const S3UploadHandler = S3UploadHandlerClass.instance();
+export default S3UploadHandler;

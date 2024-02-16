@@ -1,6 +1,6 @@
 openapi: 3.0.1
 info:
-  title: 'VW User management API'
+  title: 'SG User management API'
   description: This API Spec is for User User Micro-service.
   version: 1.0.0
 paths:

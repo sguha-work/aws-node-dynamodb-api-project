@@ -27,7 +27,7 @@ Resources:
       #     Id: OpenCors
       #     MaxAge: '3600'
 
-  VWPortalBucketPolicy:
+  SGPortalBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket:
@@ -54,14 +54,14 @@ Resources:
     #       Resource:
     #         Fn::Sub: arn:aws:s3:::${S3CommonPortalBucket}/*
   # # Configure Access to CloudFroun
-  VWPortalBucketCloudFrontOriginAccessIdentity:
+  SGPortalBucketCloudFrontOriginAccessIdentity:
     Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
     Properties:
       CloudFrontOriginAccessIdentityConfig:
         Comment: !Ref S3CommonPortalBucket
 
   # Configure CloudFront
-  VWPortalBucketCloudFrontDistribution:
+  SGPortalBucketCloudFrontDistribution:
     Type: "AWS::CloudFront::Distribution"
     Properties:
       DistributionConfig:
@@ -96,14 +96,14 @@ Resources:
           - DomainName: !GetAtt "S3CommonPortalBucket.DomainName"
             Id: s3origin
             S3OriginConfig:
-              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${VWPortalBucketCloudFrontOriginAccessIdentity}"
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${SGPortalBucketCloudFrontOriginAccessIdentity}"
         PriceClass: "PriceClass_All"
 
   # Create an IAM user with Access Keys to enable automated deployment of the website to this bucket
-  VWPortalBucketUser:
+  SGPortalBucketUser:
     Type: "AWS::IAM::User"
     Properties:
-      UserName: VW-${self:provider.stage}-portal-user
+      UserName: SG-${self:provider.stage}-portal-user
       Policies:
         - PolicyName: !Sub "publish-to-${S3CommonPortalBucket}"
           PolicyDocument:
@@ -114,10 +114,10 @@ Resources:
                   - !Sub "arn:aws:s3:::${S3CommonPortalBucket}"
                   - !Sub "arn:aws:s3:::${S3CommonPortalBucket}/*"
 
-  VWPortalBucketUserCredentials:
+  SGPortalBucketUserCredentials:
     Type: "AWS::IAM::AccessKey"
     Properties:
-      UserName: !Ref VWPortalBucketUser
+      UserName: !Ref SGPortalBucketUser
 
 Outputs:
   Bucket:
@@ -132,17 +132,17 @@ Outputs:
       Name: sg-${self:provider.stage}-portal-bucket-url
   AccessKeyId:
     Description: "S3 Access Key"
-    Value: !Ref VWPortalBucketUserCredentials
+    Value: !Ref SGPortalBucketUserCredentials
     Export:
       Name: sg-${self:provider.stage}-Portal-S3UserAccessKeyId
   AccessKeySecret:
     Description: "S3 Secret Key"
-    Value: !GetAtt VWPortalBucketUserCredentials.SecretAccessKey
+    Value: !GetAtt SGPortalBucketUserCredentials.SecretAccessKey
     Export:
       Name: sg-${self:provider.stage}-Portal-S3UserAccessKeySecret
   DistributionId:
     Description: "CloudFront Distribution ID"
-    Value: !Ref VWPortalBucketCloudFrontDistribution
+    Value: !Ref SGPortalBucketCloudFrontDistribution
   Domain:
     Description: "Cloudfront Domain"
-    Value: !GetAtt VWPortalBucketCloudFrontDistribution.DomainName
+    Value: !GetAtt SGPortalBucketCloudFrontDistribution.DomainName

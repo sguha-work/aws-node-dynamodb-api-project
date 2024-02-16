@@ -1,23 +1,17 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
-import responseHandler from '../helpers/responseHandler';
 import { ReasonPhrases } from 'http-status-codes';
-
-
-import { UserModel } from '../modules/models/user.model';
-import { VWUserDocument } from '../modules/interfaces/User.Interface';
-import NOTIFICATION from '../constants';
+import ResponseHelper from './../helpers/response.helper.js';
+import UserModel from './../models/user.model.js';
+import NOTIFICATION from './../constants/constants.js';
 
 import {
     CognitoIdentityProviderClient,
-    InitiateAuthCommand,
-    InitiateAuthCommandInput,
-    InitiateAuthCommandOutput
+    InitiateAuthCommand
 
 } from "@aws-sdk/client-cognito-identity-provider";
 
-export class VWRefreshTokenHandler extends responseHandler {
+export class RefreshTokenHandlerClass extends ResponseHelper {
     static instance() {
-        return new VWRefreshTokenHandler();
+        return new RefreshTokenHandlerClass();
     }
 
     async refreshToken(c, event) { // event: APIGatewayProxyEvent
@@ -65,6 +59,6 @@ export class VWRefreshTokenHandler extends responseHandler {
         }
     }
 }
+const RefreshTokenHandler = RefreshTokenHandlerClass.instance();
 
-
-export const RefreshTokenHandler = VWRefreshTokenHandler.instance();
+export default RefreshTokenHandler;

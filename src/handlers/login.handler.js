@@ -1,12 +1,11 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
-import responseHandler from '../helpers/responseHandler';
 import { ReasonPhrases } from 'http-status-codes';
+import ResponseHelper from './../helpers/response.helper.js';
 
-import { CognitoIdentityProviderClient, AdminInitiateAuthCommand, AdminInitiateAuthCommandOutput, AdminUpdateUserAttributesCommand, AdminUpdateUserAttributesCommandInput } from "@aws-sdk/client-cognito-identity-provider";
+import { CognitoIdentityProviderClient, AdminInitiateAuthCommand, AdminUpdateUserAttributesCommand } from "@aws-sdk/client-cognito-identity-provider";
 
-export class VWLoginHandler extends responseHandler {
+export class LoginHandlerClass extends ResponseHelper {
     static instance() {
-        return new VWLoginHandler();
+        return new LoginHandlerClass();
     }
     async login(c, event) {// event: APIGatewayProxyEvent
         console.info("Login Handler invoked successfully!!!");
@@ -85,5 +84,5 @@ export class VWLoginHandler extends responseHandler {
         }
     }
 }
-
-export const LoginHandler = VWLoginHandler.instance();
+const LoginHandler = LoginHandlerClass.instance();
+export default LoginHandler;

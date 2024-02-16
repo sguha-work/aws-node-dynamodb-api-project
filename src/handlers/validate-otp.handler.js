@@ -1,24 +1,19 @@
 // import { APIGatewayProxyEvent } from 'aws-lambda';
-import responseHandler from '../helpers/responseHandler';
 import { ReasonPhrases } from 'http-status-codes';
-
+import ResponseHelper from './../helpers/response.helper.js';
 //Load 
-import { UserModel } from '../modules/models/user.model';
-import { VWUserDocument } from '../modules/interfaces/User.Interface';
-import NOTIFICATION from '../constants';
+import  UserModel  from './../models/user.model.js';
+import NOTIFICATION from './../constants/constants.js';
 
 import {
     CognitoIdentityProviderClient,
     AdminInitiateAuthCommand,
-    AdminInitiateAuthCommandInput,
-    AdminInitiateAuthCommandOutput,
-    AdminUpdateUserAttributesCommand,
-    AdminUpdateUserAttributesCommandInput
+    AdminUpdateUserAttributesCommand
 } from '@aws-sdk/client-cognito-identity-provider'
 
-export class VWValidateOTPHandler extends responseHandler {
+export class ValidateOTPHandlerClass extends ResponseHelper {
     static instance() {
-        return new VWValidateOTPHandler();
+        return new ValidateOTPHandlerClass();
     }
 
     async ValidateOTP(c) { // event: APIGatewayProxyEvent
@@ -93,5 +88,5 @@ export class VWValidateOTPHandler extends responseHandler {
     }
 
 }
-
-export const ValidateOTPHandler = VWValidateOTPHandler.instance();
+const ValidateOTPHandler = ValidateOTPHandlerClass.instance();
+export default ValidateOTPHandler;

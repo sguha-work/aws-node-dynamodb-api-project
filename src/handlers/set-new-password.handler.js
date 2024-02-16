@@ -1,20 +1,15 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
-import responseHandler from '../helpers/responseHandler';
 import { ReasonPhrases } from 'http-status-codes';
-
-import { UserModel } from '../modules/models/user.model';
-import { VWUserDocument } from '../modules/interfaces/User.Interface';
-import NOTIFICATION from '../constants';
+import ResponseHelper from './../helpers/response.helper.js';
+import UserModel from './../models/user.model.js';
+import NOTIFICATION from './../constants/constants.js';
 import {
     CognitoIdentityProviderClient,
-    AdminRespondToAuthChallengeCommand,
-    AdminRespondToAuthChallengeCommandInput,
-    AdminRespondToAuthChallengeCommandOutput
+    AdminRespondToAuthChallengeCommand
 } from "@aws-sdk/client-cognito-identity-provider";
 
-export class VWSetNewPasswordHandler extends responseHandler {
+export class SetNewPasswordHandlerClass extends ResponseHelper {
     static instance() {
-        return new VWSetNewPasswordHandler();
+        return new SetNewPasswordHandlerClass();
     }
 
     async setNewPassword(c, event) {
@@ -50,7 +45,7 @@ export class VWSetNewPasswordHandler extends responseHandler {
             };
             return await super.sendResponse(response);
         } catch (err) {
-            console.log("VWSetNewPasswordHandler err ", err);
+            console.log("SGSetNewPasswordHandler err ", err);
             if (err.__type === 'AccessDeniedException') {
                 err.status = ReasonPhrases.UNAUTHORIZED;
             }
@@ -70,5 +65,5 @@ export class VWSetNewPasswordHandler extends responseHandler {
     }
 
 }
-
-export const SetNewPasswordHandler = VWSetNewPasswordHandler.instance();
+const SetNewPasswordHandler = SetNewPasswordHandlerClass.instance();
+export default SetNewPasswordHandler;

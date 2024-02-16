@@ -1,19 +1,19 @@
 // import {APIGatewayProxyEvent} from 'aws-lambda';
-import responseHandler from '../helpers/responseHandler';
 import { ReasonPhrases } from 'http-status-codes';
-// import { VWUser } from '../modules/interfaces/User.Interface';
-import { UserModel } from '../modules/models/user.model';
-import Dbconn from '../helpers/dbConn';
-import NOTIFICATION from '../constants';
+import ResponseHelper from './../helpers/response.helper.js';
+// import { SGUser } from '../modules/interfaces/User.Interface';
+import UserModel from './../models/user.model.js';
+import DBService from './../services/db.service.js';
+import NOTIFICATION from './../constants/constants.js';
 import {
     CognitoIdentityProviderClient,
     AdminCreateUserCommand,
     AdminAddUserToGroupCommand
 } from "@aws-sdk/client-cognito-identity-provider";
 
-class SampleSignupHandler extends responseHandler {
+class SignupHandlerClass extends ResponseHelper {
     static get instance() {
-        return new SampleSignupHandler();
+        return new SignupHandlerClass();
     }
 
     async signup(c) { // event: APIGatewayProxyEvent
@@ -73,7 +73,7 @@ class SampleSignupHandler extends responseHandler {
             // Make the user entry in the DB
             userObject._id = cognitoUser.User.Username;
             // Create DB connection
-            Dbconn.connectMongo();
+            DBService.connectMongo();
             const user = new UserModel(userObject);
             await user.save(); // save user object
 
@@ -102,5 +102,5 @@ class SampleSignupHandler extends responseHandler {
         }
     }
 }
-
-export const signupHandler = SampleSignupHandler.instance;
+const SignupHandler = SignupHandlerClass.instance;
+export default SignupHandler;

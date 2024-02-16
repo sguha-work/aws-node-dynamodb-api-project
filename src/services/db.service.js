@@ -1,5 +1,5 @@
 
-import { ConnectOptions, connect, Connection, connection, disconnect } from "mongoose"
+import mongoose from 'mongoose';
 
 // type ConnectionOptionsExtend = {
 //     useNewUrlParser: boolean
@@ -7,20 +7,20 @@ import { ConnectOptions, connect, Connection, connection, disconnect } from "mon
 // }
 let database;
 const mongoUrl = process.env.DBConnURL;
-class Dbconn {
+class DBServiceClass {
 
     constructor() {
         if (!database) this.connectMongo();
     }
 
-    static instance() {
-        return new Dbconn();
+    static get instance() {
+        return new DBServiceClass();
     }
 
-    public async connectMongo() {
+    async connectMongo() {
 
         try {
-            const options: ConnectOptions = {
+            const options = {
                 // useNewUrlParser: true,
                 // useUnifiedTopology: true,
                 // authSource: "admin",
@@ -31,8 +31,8 @@ class Dbconn {
                 // pass: '4oQ6a8703GMcLPGB',
                 dbName: 'sgDevDB'
             }
-            await connect(mongoUrl, options);
-            database = connection;
+            await mongoose.connect(mongoUrl, options);
+            database = mongoose.connection;
             database.once("open", async () => {
                 console.log("Connected to database successfully");
             });
@@ -43,15 +43,15 @@ class Dbconn {
         // database = Connection;
     }
 
-    public async disconnectMongo() {
+    async disconnectMongo() {
         try {
             if (database) {
-                disconnect();
+                mongoose.disconnect();
             }
         } catch (err) {
             console.error("Failed to disconnect DB Connection", err);
         }   
     }
 }
-
-export default Dbconn.instance() as Dbconn;
+const DBService = DBServiceClass.instance;
+export default  DBService;

@@ -1,15 +1,11 @@
-
-import responseHandler from '../helpers/responseHandler';
 import { ReasonPhrases } from 'http-status-codes';
+import {CognitoIdentityProviderClient, ConfirmForgotPasswordCommand, ForgotPasswordCommand } from "@aws-sdk/client-cognito-identity-provider";
+import ResponseHelper from './../helpers/response.helper.js';
 
 
-import {
-    CognitoIdentityProviderClient, ConfirmForgotPasswordCommand, ConfirmForgotPasswordCommandInput, ConfirmForgotPasswordCommandOutput, ForgotPasswordCommand, ForgotPasswordCommandInput, ForgotPasswordCommandOutput
-} from "@aws-sdk/client-cognito-identity-provider";
-
-class VWForgotPassword extends responseHandler {
+class ForgotPasswordHandlerClass extends ResponseHelper {
     static instance() {
-        return new VWForgotPassword();
+        return new ForgotPasswordHandlerClass();
     }
 
     async forgotPassword(c) {
@@ -94,5 +90,5 @@ class VWForgotPassword extends responseHandler {
         }
     }
 }
-
-export const ForgotPasswordHandler = VWForgotPassword.instance();
+const ForgotPasswordHandler = ForgotPasswordHandlerClass.instance();
+export default ForgotPasswordHandler;

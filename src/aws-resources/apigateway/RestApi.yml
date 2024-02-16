@@ -11,7 +11,7 @@ Resources:
     Type: AWS::ApiGateway::Authorizer
     Properties:
       AuthorizerResultTtlInSeconds: 300
-      Name: VWGatewayAuthorizer
+      Name: SGGatewayAuthorizer
       Type: COGNITO_USER_POOLS
       IdentitySource: method.request.header.Authorization
       ProviderARNs: 

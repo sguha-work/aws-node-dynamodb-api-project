@@ -1,14 +1,11 @@
-
-import responseHandler from '../helpers/responseHandler';
 import { ReasonPhrases } from 'http-status-codes';
+import ResponseHelper from './../helpers/response.helper.js';
+import UserModel from './../models/user.model.js';
+import NOTIFICATION from './../constants/constants.js';
 
-import { UserModel } from '../modules/models/user.model';
-import { VWUserDocument } from '../modules/interfaces/User.Interface';
-import NOTIFICATION from '../constants';
-
-class VWUserHandler extends responseHandler {
+class UserHandlerClass extends ResponseHelper {
     static instance() {
-        return new VWUserHandler();
+        return new UserHandlerClass();
     }
 
     // method to return user object filtered by userID
@@ -38,13 +35,13 @@ class VWUserHandler extends responseHandler {
 
 
 
-    async updateUser(c: any) {
+    async updateUser(c) {
         console.log("updateUser Invoked");
         try {
 
             const { userID } = c.request.params;
             const userObjToUpdate = c.request.requestBody;
-            const user: VWUserDocument = await UserModel.findOneAndUpdate({ _id: userID }, userObjToUpdate, {
+            const user = await UserModel.findOneAndUpdate({ _id: userID }, userObjToUpdate, {
                 new: true
             });
             console.log("Updated User details ::: ", user);
@@ -65,5 +62,5 @@ class VWUserHandler extends responseHandler {
     }
 
 }
-
-export const userHandler = VWUserHandler.instance();
+const UserHandler = UserHandlerClass.instance();
+export default UserHandler
