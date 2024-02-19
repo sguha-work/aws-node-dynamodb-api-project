@@ -56,7 +56,7 @@ Resources:
     Properties:
       GroupName: sgUser
       Precedence: 2
-      Description: This Group is for Regular users in Vitaware.
+      Description: This Group is for Regular users in Org.
       UserPoolId:
         Ref: CognitoUserPool
 
@@ -65,7 +65,7 @@ Resources:
     Properties:
       GroupName: sgTechnician
       Precedence: 3
-      Description: This Group is for Dealers in Vitaware.
+      Description: This Group is for Dealers in Org.
       UserPoolId:
         Ref: CognitoUserPool
 

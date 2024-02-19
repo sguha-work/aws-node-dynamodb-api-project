@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  aws-node-dynamodb-api-project:
+    environment:
+      - NODE_ENV=development
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/usr/src/app
+    container_name: aws-node-dynamodb-api-project
+    expose:
+      - '9000'
+    ports:
+      - '9000:9000'
+    command: npm run dev
